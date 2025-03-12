@@ -6,6 +6,7 @@
 - Splunk: Splunk Enterprise (Server)
 - Splunk Universal Forwarder (Client)
 - Suricata(IPS tool)
+- OSSEC(Host IPS)
 ## Command-Line Tools:
 - ssh (For remote access, if needed)
 - netstat (For network port checking)
@@ -136,3 +137,35 @@ Search: index=* sourcetype=suricata
 
 - If you face any error then check below command and solve it.
 sudo tail -n 50 /opt/splunkforwarder/var/log/splunk/splunkd.log
+
+## OSSEC(HostIPS)
+
+## 1. OSSEC Installation:
+
+- Installed necessary dependencies: build-essential, libssl-dev, zlib1g-dev, libpcre2-dev, libsystemd-dev.
+- Downloaded OSSEC from GitHub.
+- Extracted the OSSEC archive.
+- Ran the OSSEC installer (install.sh).
+- Followed the installation prompts, choosing "server" installation, enabling log analysis, rootcheck, and integrity checks.
+- Whitelisted the Kali VM's IP address(attacking machine).
+- Enabled remote syslog.
+## 2. OSSEC Service Management:
+
+- Started the OSSEC service: /var/ossec/bin/ossec-control start.
+- Checked OSSEC status: /var/ossec/bin/ossec-control status.
+## 3. Splunk Forwarder Configuration:
+
+Edited /opt/splunkforwarder/etc/system/local/inputs.conf to add the OSSEC log file as a monitor:
+[monitor:///var/ossec/logs/alerts/alerts.log]
+sourcetype = ossec
+Restarted the Splunk Forwarder: /opt/splunkforwarder/bin/splunk restart.
+- 4. Make sure the splunk sever and forwarder are running
+## 5. OSSEC Log Verification in Splunk:
+
+- Accessed Splunk Web.
+- Ran the search: index=* sourcetype=ossec.
+- Verified OSSEC events were present in the search results.
+## 6. OSSEC Testing:
+
+Modified the /etc/passwd file to generate a test alert.
+Checked the OSSEC alerts log: /var/ossec/logs/alerts/alerts.log.
