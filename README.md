@@ -35,35 +35,35 @@
 
 ## 2. Splunk Server Installation:
 - Download the Splunk Enterprise .deb package in ubuntu.
-## Install Splunk Enterprise:
+### Install Splunk Enterprise:
 sudo dpkg -i splunk-enterprise-*.deb
 - Most important thing is make sure to replace the splunk-enterprise-*.deb to your actual downloaded file name
-## Start Splunk:
+### Start Splunk:
 sudo /opt/splunk/bin/splunk start --accept-license
-## Configure a Splunk TCP input on port 9997 in /opt/splunk/etc/system/local/inputs.conf:
+### Configure a Splunk TCP input on port 9997 in /opt/splunk/etc/system/local/inputs.conf:
 - (Edit /opt/splunk/etc/system/local/inputs.conf and add: [tcp://9997], connection_host=ip)
 - Ensure that the outputs.conf file does not contain any forwarding information that sends data back to the server.
-## Verify that the Splunk server is listening on port 9997:
+### Verify that the Splunk server is listening on port 9997:
 sudo netstat -tuln | grep 9997
-## Access the Splunk web interface:
+### Access the Splunk web interface:
 http://<server_ip>:8000
-- here change server_ip to your adapter 2 ip address
+here change server_ip to your adapter 2 ip address
 
 ## 3. Splunk Forwarder Installation:
 - Download the Splunk Universal Forwarder .deb package.
-## Install the forwarder:
+### Install the forwarder:
 cd Downloads/
 sudo dpkg -i splunkforwarder-*.deb
-## Start the forwarder:
+### Start the forwarder:
 sudo /opt/splunkforwarder/bin/splunk start --accept-license
-## configure the forwarder to send data to the Splunk server:
+### configure the forwarder to send data to the Splunk server:
 sudo /opt/splunkforwarder/bin/splunk add forward-server <server_ip>:9997
-## Restart the forwarder:
+### Restart the forwarder:
 sudo /opt/splunkforwarder/bin/splunk restart
-## Correct any file permission issues that arise with the fishbucket directory.
-## Verify the forwarder's status:
+### Correct any file permission issues that arise with the fishbucket directory.
+### Verify the forwarder's status:
 sudo /opt/splunkforwarder/bin/splunk status
-## Check the forwarder's logs for errors:
+### Check the forwarder's logs for errors:
 sudo tail -n 20 /opt/splunkforwarder/var/log/splunk/splunkd.log
 
 ## 4. Firewall Configuration:
@@ -87,49 +87,48 @@ sudo ufw enable
 
 ## Suricata (IPS Tool)
 
-## 1. Suricata Installation:
+### 1. Suricata Installation:
 
 sudo apt update
 sudo apt install suricata -y
-## 2. Suricata Configuration (Editing suricata.yaml):
+### 2. Suricata Configuration (Editing suricata.yaml):
 
 sudo nano /etc/suricata/suricata.yaml
 -Edited af-packet to use enp0s8 (or the correct interface).
 -Edited eve-log to enable eve.json logging.
 -Saved and closed the file.
-## 3. Suricata Rules Update:
+### 3. Suricata Rules Update:
 
 sudo apt install suricata-update -y
 sudo suricata-update
-## 4. Suricata User and Permissions:
+### 4. Suricata User and Permissions:
 
 sudo groupadd suricata
 sudo useradd -g suricata suricata
 sudo chown -R suricata:suricata /var/lib/suricata/rules
 sudo chown suricata:suricata /var/lib/suricata/rules/classification.config
 sudo chown suricata:suricata /var/lib/suricata/rules/suricata.rules
-## 5. Suricata Service Management:
+### 5. Suricata Service Management:
 
 sudo systemctl start suricata
 - 6. Ensure the splunk server and forwarder are running if not turn on like we did previously
-## 7. Splunk Forwarder Configuration (inputs.conf):
+### 7. Splunk Forwarder Configuration (inputs.conf):
 
 sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
-Added:
-Ini, TOML
 
 [monitor:///var/log/suricata/eve.json]
 sourcetype = suricata
-Saved and closed the file.
 
-## 8. Splunk Forwarder User and Permissions:
+- add the above 2 lines save and close the file.
+
+### 8. Splunk Forwarder User and Permissions:
 
 sudo chown splunkfwd:splunkfwd /var/log/suricata/eve.json
-## 9. Splunk Forwarder Service Management:
+### 9. Splunk Forwarder Service Management:
 
 sudo /opt/splunkforwarder/bin/splunk start --accept-license
 
-10. Verify Logs in Splunk:
+### 10. Verify Logs in Splunk:
 
 Access Splunk Web UI.
 Search: index=* sourcetype=suricata
@@ -140,7 +139,7 @@ sudo tail -n 50 /opt/splunkforwarder/var/log/splunk/splunkd.log
 
 ## OSSEC(HostIPS)
 
-## 1. OSSEC Installation:
+### 1. OSSEC Installation:
 
 - Installed necessary dependencies: build-essential, libssl-dev, zlib1g-dev, libpcre2-dev, libsystemd-dev.
 - Downloaded OSSEC from GitHub.
@@ -149,23 +148,23 @@ sudo tail -n 50 /opt/splunkforwarder/var/log/splunk/splunkd.log
 - Followed the installation prompts, choosing "server" installation, enabling log analysis, rootcheck, and integrity checks.
 - Whitelisted the Kali VM's IP address(attacking machine).
 - Enabled remote syslog.
-## 2. OSSEC Service Management:
+### 2. OSSEC Service Management:
 
 - Started the OSSEC service: /var/ossec/bin/ossec-control start.
 - Checked OSSEC status: /var/ossec/bin/ossec-control status.
-## 3. Splunk Forwarder Configuration:
+### 3. Splunk Forwarder Configuration:
 
 Edited /opt/splunkforwarder/etc/system/local/inputs.conf to add the OSSEC log file as a monitor:
 [monitor:///var/ossec/logs/alerts/alerts.log]
 sourcetype = ossec
 Restarted the Splunk Forwarder: /opt/splunkforwarder/bin/splunk restart.
 - 4. Make sure the splunk sever and forwarder are running
-## 5. OSSEC Log Verification in Splunk:
+### 5. OSSEC Log Verification in Splunk:
 
 - Accessed Splunk Web.
 - Ran the search: index=* sourcetype=ossec.
 - Verified OSSEC events were present in the search results.
-## 6. OSSEC Testing:
+### 6. OSSEC Testing:
 
 Modified the /etc/passwd file to generate a test alert.
 Checked the OSSEC alerts log: /var/ossec/logs/alerts/alerts.log.
