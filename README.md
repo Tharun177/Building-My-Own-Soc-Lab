@@ -5,6 +5,7 @@
 - Ubuntu Server (Operating system for both Splunk server and forwarder)
 - Splunk: Splunk Enterprise (Server)
 - Splunk Universal Forwarder (Client)
+- Suricata(IPS tool)
 ## Command-Line Tools:
 - ssh (For remote access, if needed)
 - netstat (For network port checking)
@@ -82,3 +83,56 @@ sudo ufw enable
 - File Permissions: Pay close attention to file permissions, especially in the fishbucket directory of the forwarder.
 - Splunk Configuration: Double-check the configuration files (inputs.conf, outputs.conf, server.conf).
 - Log Files: Regularly check the Splunk server and forwarder log files for errors.
+
+## Suricata (IPS Tool)
+
+## 1. Suricata Installation:
+
+sudo apt update
+sudo apt install suricata -y
+## 2. Suricata Configuration (Editing suricata.yaml):
+
+sudo nano /etc/suricata/suricata.yaml
+-Edited af-packet to use enp0s8 (or the correct interface).
+-Edited eve-log to enable eve.json logging.
+-Saved and closed the file.
+## 3. Suricata Rules Update:
+
+sudo apt install suricata-update -y
+sudo suricata-update
+## 4. Suricata User and Permissions:
+
+sudo groupadd suricata
+sudo useradd -g suricata suricata
+sudo chown -R suricata:suricata /var/lib/suricata/rules
+sudo chown suricata:suricata /var/lib/suricata/rules/classification.config
+sudo chown suricata:suricata /var/lib/suricata/rules/suricata.rules
+## 5. Suricata Service Management:
+
+sudo systemctl start suricata
+- 6. Ensure the splunk server and forwarder are running if not turn on like we did previously
+## 7. Splunk Forwarder Configuration (inputs.conf):
+
+sudo nano /opt/splunkforwarder/etc/system/local/inputs.conf
+Added:
+Ini, TOML
+
+[monitor:///var/log/suricata/eve.json]
+sourcetype = suricata
+Saved and closed the file.
+
+## 8. Splunk Forwarder User and Permissions:
+
+sudo chown splunkfwd:splunkfwd /var/log/suricata/eve.json
+## 9. Splunk Forwarder Service Management:
+
+sudo /opt/splunkforwarder/bin/splunk start --accept-license
+
+10. Verify Logs in Splunk:
+
+Access Splunk Web UI.
+Search: index=* sourcetype=suricata
+## 11. Forwarder Log Check:
+
+- If you face any error then check below command and solve it.
+sudo tail -n 50 /opt/splunkforwarder/var/log/splunk/splunkd.log
