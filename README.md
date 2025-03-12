@@ -7,6 +7,7 @@
 - Splunk Universal Forwarder (Client)
 - Suricata(IPS tool)
 - OSSEC(Host IPS)
+- Wireshark
 ## Command-Line Tools:
 - ssh (For remote access, if needed)
 - netstat (For network port checking)
@@ -168,3 +169,28 @@ Restarted the Splunk Forwarder: /opt/splunkforwarder/bin/splunk restart.
 
 Modified the /etc/passwd file to generate a test alert.
 Checked the OSSEC alerts log: /var/ossec/logs/alerts/alerts.log.
+
+## Wureshark
+### 1. Wireshark Installation:
+
+sudo apt update
+sudo apt install wireshark -y
+### 2. Wireshark Permissions Configuration:
+
+Answered "Yes" to the prompt "Should non-superusers be able to capture packets?" during installation.
+Added the user to the wireshark group: sudo usermod -aG wireshark $USER (replacing $USER with the actual username).
+Applied group changes: Logged out and back in, or ran newgrp wireshark.
+### 3. Wireshark Launch and Basic Capture:
+
+Launched Wireshark: wireshark (or through the applications menu).
+Selected the network interface (e.g., enp0s8).
+Started capturing packets by double-clicking the interface.
+Generated network traffic (e.g., browsing, pinging).
+Stopped the capture by clicking the red square "Stop capturing packets" button.
+### 4. Basic Traffic Analysis:
+
+Explored packet details in the packet details pane.
+Apply display filters (e.g., http, dns, icmp, tcp.port == 80).
+Follow TCP streams.
+
+
