@@ -193,4 +193,36 @@ Explored packet details in the packet details pane.
 Apply display filters (e.g., http, dns, icmp, tcp.port == 80).
 Follow TCP streams.
 
+## Nessus Installation In Kaki( Attacking VM)
+
+### 1. Tenable Account Creation:
+
+- Navigat to the Tenable Nessus Essentials download page.
+- Enter name and email address to create a Tenable account.
+- Receives an activation code via email.
+### 2. Nessus Essentials Download:
+
+- Used the link in the email to download the Nessus Essentials installer (.deb file) for the 
+  appropriate operating system (Kali Linux in this case).
+### 3. Nessus Essentials Installation (on Kali Linux):
+
+- Opened a terminal and navigated to the download directory.
+- Installed Nessus Essentials using
+sudo dpkg -i <nessus_file.deb> (replacing <nessus_file.deb> with the actual filename).
+### 4. Nessus Service Startup:
+
+Started the Nessus service using sudo systemctl start nessusd.service.
+### 5. Nessus Web Interface Access:
+
+- Opened a web browser and navigated to https://localhost:8834.
+Bypassed the self-signed certificate warning.
+6. Nessus Configuration:
+
+- Followed the on-screen instructions to configure Nessus.
+- Entered the activation code received from Tenable.
+- Waited for Nessus to download and install plugins.
+### 7. Nessus Ready for Scans:
+
+- Nessus is now ready to perform vulnerability scans.
+
 
