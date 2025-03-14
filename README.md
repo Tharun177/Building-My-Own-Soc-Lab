@@ -8,6 +8,9 @@
 - Suricata(IPS tool)
 - OSSEC(Host IPS)
 - Wireshark
+- Kali
+- Nessus
+- Linus(Command Line Security Auditing Tool)
 ## Command-Line Tools:
 - ssh (For remote access, if needed)
 - netstat (For network port checking)
@@ -170,7 +173,7 @@ Restarted the Splunk Forwarder: /opt/splunkforwarder/bin/splunk restart.
 Modified the /etc/passwd file to generate a test alert.
 Checked the OSSEC alerts log: /var/ossec/logs/alerts/alerts.log.
 
-## Wureshark
+## Wireshark
 ### 1. Wireshark Installation:
 
 sudo apt update
@@ -224,5 +227,35 @@ Bypassed the self-signed certificate warning.
 ### 7. Nessus Ready for Scans:
 
 - Nessus is now ready to perform vulnerability scans.
+
+## Linus 
+
+### 1. Installation:
+
+- use the apt package manager, which is the standard way to install software on Ubuntu.
+- The command we used was:
+
+sudo apt install lynis
+sudo grants administrative privileges, allowing us to install software.
+apt install tells the package manager to install the specified package (lynis).
+### 2. Verification:
+
+- After installation, we verified that lynis was installed correctly by checking its version:
+lynis --version
+- This command displays the installed version of lynis.
+### 3. Running an Audit:
+
+- We then ran a basic system audit using lynis:
+
+sudo lynis audit system
+- sudo is again used for administrative privileges, as lynis needs to access system files.
+- lynis audit system tells lynis to perform a comprehensive security scan of the system.
+### 4. Reviewing the Report:
+
+- lynis generated a report with the scan results.
+- We note that the report includes:
+- Warnings and suggestions for improving system security.
+- Detailed information about the scan.
+- The report is also saved to /var/log/lynis.log for later review.
 
 
