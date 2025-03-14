@@ -196,6 +196,64 @@ Explored packet details in the packet details pane.
 Apply display filters (e.g., http, dns, icmp, tcp.port == 80).
 Follow TCP streams.
 
+
+## Linus 
+
+### 1. Installation:
+
+- use the apt package manager, which is the standard way to install software on Ubuntu.
+- The command we used was:
+
+sudo apt install lynis
+sudo grants administrative privileges, allowing us to install software.
+apt install tells the package manager to install the specified package (lynis).
+### 2. Verification:
+
+- After installation, we verified that lynis was installed correctly by checking its version:
+lynis --version
+- This command displays the installed version of lynis.
+### 3. Running an Audit:
+
+- We then ran a basic system audit using lynis:
+
+sudo lynis audit system
+- sudo is again used for administrative privileges, as lynis needs to access system files.
+- lynis audit system tells lynis to perform a comprehensive security scan of the system.
+### 4. Reviewing the Report:
+
+- lynis generated a report with the scan results.
+- We note that the report includes:
+- Warnings and suggestions for improving system security.
+- Detailed information about the scan.
+- The report is also saved to /var/log/lynis.log for later review.
+
+## auditd
+
+Certainly! Here's a breakdown of the steps we took to install and verify auditd on your Ubuntu virtual machine:
+
+### 1. Installation :
+
+sudo apt install auditd
+
+### 2. Verification and Status Check:
+
+sudo systemctl status auditd
+
+### 3. Configuration (Optional):
+
+sudo auditctl -w /etc/passwd -p wa -k passwd_changes
+- This command creates a rule to monitor changes to the /etc/passwd file.
+
+### 4. Log Viewing (Optional):
+
+sudo ausearch -k passwd_changes -i
+- This command searches the audit logs for entries related to the passwd_changes key.
+
+## kali
+- Install the Kali Linux Vm for offensive purpose
+- Check the below tools. These are pre built in Kali VM if not install them
+- Nmap, Metasploit, John The ripper, Nikto
+
 ## Nessus Installation In Kaki( Attacking VM)
 
 ### 1. Tenable Account Creation:
@@ -228,34 +286,5 @@ Bypassed the self-signed certificate warning.
 
 - Nessus is now ready to perform vulnerability scans.
 
-## Linus 
-
-### 1. Installation:
-
-- use the apt package manager, which is the standard way to install software on Ubuntu.
-- The command we used was:
-
-sudo apt install lynis
-sudo grants administrative privileges, allowing us to install software.
-apt install tells the package manager to install the specified package (lynis).
-### 2. Verification:
-
-- After installation, we verified that lynis was installed correctly by checking its version:
-lynis --version
-- This command displays the installed version of lynis.
-### 3. Running an Audit:
-
-- We then ran a basic system audit using lynis:
-
-sudo lynis audit system
-- sudo is again used for administrative privileges, as lynis needs to access system files.
-- lynis audit system tells lynis to perform a comprehensive security scan of the system.
-### 4. Reviewing the Report:
-
-- lynis generated a report with the scan results.
-- We note that the report includes:
-- Warnings and suggestions for improving system security.
-- Detailed information about the scan.
-- The report is also saved to /var/log/lynis.log for later review.
 
 
