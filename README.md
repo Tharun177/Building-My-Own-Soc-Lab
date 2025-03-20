@@ -286,5 +286,139 @@ Bypassed the self-signed certificate warning.
 
 - Nessus is now ready to perform vulnerability scans.
 
+## Testing The Lab
+### checking whether the offense tools are running
+### 1. Enable OSSEC (Host-based Intrusion Detection System - HIDS):
+
+- Ensure OSSEC is running:
+
+sudo /var/ossec/bin/ossec-control status
+
+- If it's not running, start it:
+
+sudo /var/ossec/bin/ossec-control start
+- Review OSSEC logs for any initial alerts:
+
+sudo tail -f /var/ossec/logs/alerts/alerts.log
+### 2. Enable auditd (Audit Daemon):
+
+- Ensure auditd is running:
+sudo systemctl status auditd
+
+- If it's not running, start it:
+
+sudo systemctl start auditd
+_ Add a rule to monitor key system files (e.g., /etc/passwd):
+
+sudo auditctl -w /etc/passwd -p wa -k passwd_changes
+
+- Monitor audit logs:
+
+sudo ausearch -k passwd_changes -i
+### 3. Start tcpdump (Network Monitoring):
+
+Start tcpdump to capture network traffic:
+
+sudo tcpdump -i eth0 -w defense_capture.pcap
+
+Replace eth0 with your network interface.
+- This will capture traffic to the defense_capture.pcap file.
+### 4. Run lynis (Security Auditing):
+
+- Run a quick system audit with lynis:
+
+sudo lynis audit system
+
+Review the lynis report in /var/log/lynis.log for any initial findings.
+### 5. Start Wireshark (Optional):
+
+If you prefer a graphical interface, start Wireshark on your chosen interface.
+### 6. Verify Tools are Running:
+
+Double-check that OSSEC, auditd, and tcpdump are running.
+Make sure you can see the tcpdump file growing.
+
+## Attcking though Kali VM
+
+### 1.Start the Attacker Machine (Kali):
+- Ensure your Kali Linux virtual machine is running and connected to the same network as your target (Metasploitable 2) and your Ubuntu (defense) machine.
+- Perform Nmap Scan:
+- In your Kali terminal, perform an Nmap scan against the Metasploitable 2 VM:
+sudo nmap -sS -sV <target_IP_address>
+Replace <target_IP_address> with the IP address of your Metasploitable 2 VM.
+
+### 2.Searchsploit:
+- Use searchsploit to find exploits.
+
+searchsploit <service name> <version>
+### 3.Metasploit:
+- Use metasploit to attack the Metasploitable 2 machine.
+### During the Attack:
+
+- Observe the output of OSSEC logs (sudo tail -f /var/ossec/logs/alerts/alerts.log) for any alerts.
+- Observe the output of auditd logs (sudo ausearch -k passwd_changes -i) for any activity.
+- Observe the network traffic in Wireshark (if running) or let tcpdump capture the traffic.
+### 4.After the Attack:
+
+- Stop tcpdump (Ctrl+C).
+- Analyze the defense_capture.pcap file with tcpdump or Wireshark.
+- Review the OSSEC and auditd logs for any events related to the attack.
+- Review the lynis log again, to see if anything changed.
+
+## Analysing the result
+
+### Analysis Steps:
+
+### 1.Using tcpdump:
+
+sudo tcpdump -r defense_capture.pcap
+
+- Look for traffic related to the Nmap scan and the Metasploit exploit.
+- Use filters to narrow down the results (e.g., host <target_IP_address>, port <port_number>).
+### 2.Using Wireshark (If You Captured with It):
+
+- Open defense_capture.pcap in Wireshark.
+- Use display filters to analyze the traffic.
+- Look for SYN scans, exploit traffic, and any other suspicious activity.
+- 
+### 3.Review OSSEC Logs:
+
+- In your Ubuntu terminal, view the OSSEC alerts:
+
+sudo tail -f /var/ossec/logs/alerts/alerts.log
+
+- Look for alerts related to the Nmap scan, the exploit, or any other suspicious activity.
+
+- Pay attention to the timestamps and the descriptions of the alerts.
+
+### 4. Review auditd Logs:
+
+- In your Ubuntu terminal, view the auditd logs:
+
+sudo ausearch -k passwd_changes -i
+
+- Look for any activity related to the files you were monitoring (e.g., /etc/passwd).
+
+- Check for any unusual system calls or file access attempts.
+
+### 5.Review lynis Log:
+
+- Open the lynis log file:
+
+sudo less /var/log/lynis.log
+
+- Look for any changes or new entries that might be related to the attack.
+
+- Compare the current log with the one you generated before the attack.
+
+### Questions to Consider:
+
+- 1.Did OSSEC detect the Nmap scan or the Metasploit exploit?
+- 2.Did auditd log any suspicious file access or system calls?
+- 3.What kind of network traffic did tcpdump/Wireshark capture?
+- 4.Did lynis identify any changes to the system's security posture?
+
+
+
 
 
