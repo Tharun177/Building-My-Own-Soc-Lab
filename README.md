@@ -3,6 +3,8 @@
 ## Tools:
 - Virtual Machine (VM): VirtualBox (Used for creating the Ubuntu VMs)
 - Ubuntu Server (Operating system for both Splunk server and forwarder)
+- AWS EC2 Ubuntu instance(attacking machine) or u can use kali vm too or any other tools you like.
+- Putty
 - Splunk: Splunk Enterprise (Server)
 - Splunk Universal Forwarder (Client)
 - Suricata(IPS tool)
@@ -249,12 +251,22 @@ sudo auditctl -w /etc/passwd -p wa -k passwd_changes
 sudo ausearch -k passwd_changes -i
 - This command searches the audit logs for entries related to the passwd_changes key.
 
-## kali
-- Install the Kali Linux Vm for offensive purpose
-- Check the below tools. These are pre built in Kali VM if not install them
-- Nmap, Metasploit, John The ripper, Nikto
+## Setting AWS EC2 Instance 
+- We provisioned an Ubuntu instance on AWS EC2. This instance served as our attacking machine, used to simulate various network-based attacks.
+- To remotely access the EC2 instance from a Windows machine, we used PuTTY, a free and open-source SSH and Telnet client.
+### PuTTY and SSH Keys: 
+- To establish a secure connection, we generated an SSH key pair using PuTTYgen, a PuTTY utility.
+- PuTTYgen created a public key (which we added to the EC2 instance's authorized_keys file) and a private key (which we used with PuTTY).
+- This key-based authentication provided a more secure alternative to password-based logins.
+- We configured PuTTY to use the generated private key (.ppk file) for authentication, allowing us to establish an encrypted SSH connection to the EC2 instance.
+### Network Connectivity (Tailscale):
 
-## Nessus Installation In Kaki( Attacking VM)
+- To establish a secure and direct network connection between the EC2 instance and the local Ubuntu VM, we employed Tailscale, a VPN service built on WireGuard.
+- Tailscale assigned each machine a unique Tailscale IP address, effectively placing them on a private, virtual network.
+- This enabled direct communication and pinging between the machines, bypassing the complexities of traditional port forwarding or public IP configurations.
+- This made the attack and defense simulation much simpler, and more secure.
+
+## Nessus Installation In Ubuntu istance( Attacking VM)
 
 ### 1. Tenable Account Creation:
 
@@ -264,8 +276,8 @@ sudo ausearch -k passwd_changes -i
 ### 2. Nessus Essentials Download:
 
 - Used the link in the email to download the Nessus Essentials installer (.deb file) for the 
-  appropriate operating system (Kali Linux in this case).
-### 3. Nessus Essentials Installation (on Kali Linux):
+  appropriate operating system 
+### 3. Nessus Essentials Installation (on Ubuntu EC2):
 
 - Opened a terminal and navigated to the download directory.
 - Installed Nessus Essentials using
@@ -287,7 +299,7 @@ Bypassed the self-signed certificate warning.
 - Nessus is now ready to perform vulnerability scans.
 
 ## Testing The Lab
-### checking whether the offense tools are running
+### checking whether the defense tools are running
 ### 1. Enable OSSEC (Host-based Intrusion Detection System - HIDS):
 
 - Ensure OSSEC is running:
@@ -336,87 +348,7 @@ If you prefer a graphical interface, start Wireshark on your chosen interface.
 ### 6. Verify Tools are Running:
 
 Double-check that OSSEC, auditd, and tcpdump are running.
-Make sure you can see the tcpdump file growing.
 
-## Attcking though Kali VM
-
-### 1.Start the Attacker Machine (Kali):
-- Ensure your Kali Linux virtual machine is running and connected to the same network as your target (Metasploitable 2) and your Ubuntu (defense) machine.
-- Perform Nmap Scan:
-- In your Kali terminal, perform an Nmap scan against the Metasploitable 2 VM:
-sudo nmap -sS -sV <target_IP_address>
-Replace <target_IP_address> with the IP address of your Metasploitable 2 VM.
-
-### 2.Searchsploit:
-- Use searchsploit to find exploits.
-
-searchsploit <service name> <version>
-### 3.Metasploit:
-- Use metasploit to attack the Metasploitable 2 machine.
-### During the Attack:
-
-- Observe the output of OSSEC logs (sudo tail -f /var/ossec/logs/alerts/alerts.log) for any alerts.
-- Observe the output of auditd logs (sudo ausearch -k passwd_changes -i) for any activity.
-- Observe the network traffic in Wireshark (if running) or let tcpdump capture the traffic.
-### 4.After the Attack:
-
-- Stop tcpdump (Ctrl+C).
-- Analyze the defense_capture.pcap file with tcpdump or Wireshark.
-- Review the OSSEC and auditd logs for any events related to the attack.
-- Review the lynis log again, to see if anything changed.
-
-## Analysing the result
-
-### Analysis Steps:
-
-### 1.Using tcpdump:
-
-sudo tcpdump -r defense_capture.pcap
-
-- Look for traffic related to the Nmap scan and the Metasploit exploit.
-- Use filters to narrow down the results (e.g., host <target_IP_address>, port <port_number>).
-### 2.Using Wireshark (If You Captured with It):
-
-- Open defense_capture.pcap in Wireshark.
-- Use display filters to analyze the traffic.
-- Look for SYN scans, exploit traffic, and any other suspicious activity.
-- 
-### 3.Review OSSEC Logs:
-
-- In your Ubuntu terminal, view the OSSEC alerts:
-
-sudo tail -f /var/ossec/logs/alerts/alerts.log
-
-- Look for alerts related to the Nmap scan, the exploit, or any other suspicious activity.
-
-- Pay attention to the timestamps and the descriptions of the alerts.
-
-### 4. Review auditd Logs:
-
-- In your Ubuntu terminal, view the auditd logs:
-
-sudo ausearch -k passwd_changes -i
-
-- Look for any activity related to the files you were monitoring (e.g., /etc/passwd).
-
-- Check for any unusual system calls or file access attempts.
-
-### 5.Review lynis Log:
-
-- Open the lynis log file:
-
-sudo less /var/log/lynis.log
-
-- Look for any changes or new entries that might be related to the attack.
-
-- Compare the current log with the one you generated before the attack.
-
-### Questions to Consider:
-
-- 1.Did OSSEC detect the Nmap scan or the Metasploit exploit?
-- 2.Did auditd log any suspicious file access or system calls?
-- 3.What kind of network traffic did tcpdump/Wireshark capture?
-- 4.Did lynis identify any changes to the system's security posture?
 
 
 
